@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Bibliothèque de Prompts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            /* Palette de couleurs des catégories */
+            --color-strategy: #4361ee;
+            --color-writing: #3a0ca3;
+            --color-creative: #f72585;
+            --color-marketing: #4895ef;
+            --color-programming: #3f37c9;
+            --color-personal: #4cc9f0;
+            --color-analysis: #7209b7;
+            --color-communication: #f77f00;
+            --color-journalism: #d00000;
+            --color-social: #06d6a0;
+            
+            /* Gradient Atlantis */
+            --gradient-atlantis: linear-gradient(135deg, #1A2980, #26D0CE);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #212529;
+            /* Augmentation de la taille de base pour meilleur confort de lecture */
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            /* Application du gradient Atlantis */
+            background-image: var(--gradient-atlantis);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 2;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            font-size: 1.1rem;
+        }
+        
+        .filter-select {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            font-size: 1.1rem;
+        }
+        
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .prompt-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            /* Bordure latérale selon la catégorie */
+            border-left: 4px solid #dee2e6;
+        }
+        
+        /* Bordures colorées selon la catégorie */
+        .category-strategy { border-left-color: var(--color-strategy); }
+        .category-writing { border-left-color: var(--color-writing); }
+        .category-creative { border-left-color: var(--color-creative); }
+        .category-marketing { border-left-color: var(--color-marketing); }
+        .category-programming { border-left-color: var(--color-programming); }
+        .category-personal { border-left-color: var(--color-personal); }
+        .category-analysis { border-left-color: var(--color-analysis); }
+        .category-communication { border-left-color: var(--color-communication); }
+        .category-journalism { border-left-color: var(--color-journalism); }
+        .category-social { border-left-color: var(--color-social); }
+        
+        .prompt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
+        .card-title {
+            margin: 0 0 0.75rem 0;
+            font-size: 1.4rem;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-title-icon {
+            font-size: 1.5rem;
+        }
+        
+        .card-subtitle {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tag {
+            background-color: #f0f0f0;
+            color: #666;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .card-rating {
+            display: flex;
+        }
+        
+        .star {
+            color: #ffc107;
+            font-size: 1rem;
+        }
+        
+        .card-text {
+            font-size: 1.05rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 0.5rem;
+            z-index: 1001;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-title-icon {
+            font-size: 1.8rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .prompt-content {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.25rem;
+            white-space: pre-wrap;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 1.1rem;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-left: 0.5rem;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        /* Styles pour les catégories colorées */
+        .category-badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.375rem;
+            margin-right: 0.5rem;
+        }
+        
+        /* Badge colorés pour chaque catégorie */
+        .badge-strategy { background-color: var(--color-strategy); }
+        .badge-writing { background-color: var(--color-writing); }
+        .badge-creative { background-color: var(--color-creative); }
+        .badge-marketing { background-color: var(--color-marketing); }
+        .badge-programming { background-color: var(--color-programming); }
+        .badge-personal { background-color: var(--color-personal); }
+        .badge-analysis { background-color: var(--color-analysis); }
+        .badge-communication { background-color: var(--color-communication); }
+        .badge-journalism { background-color: var(--color-journalism); }
+        .badge-social { background-color: var(--color-social); }
+        
+        /* Compteur d'usage */
+        .usage-counter {
+            font-size: 0.95rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-input, .filter-select {
+                width: 100%;
+            }
+            
+            .prompts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-brain"></i>
+            Ma Bibliothèque de Prompts
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un prompt...">
+            <select class="filter-select" id="categoryFilter">
+                <option value="">🔍 Toutes les catégories</option>
+                <option value="Stratégie et Conseil">🚀 Stratégie et Conseil</option>
+                <option value="Rédaction et Synthèse">📝 Rédaction et Synthèse</option>
+                <option value="Création Littéraire">💡 Création Littéraire</option>
+                <option value="Marketing Digital">📊 Marketing Digital</option>
+                <option value="Programmation">💻 Programmation</option>
+            </select>
+            <select class="filter-select" id="tagFilter">
+                <option value="">🏷️ Tous les tags</option>
+                <option value="résumé">résumé</option>
+                <option value="stratégie">stratégie</option>
+                <option value="développement personnel">développement personnel</option>
+                <option value="code">code</option>
+                <option value="blog">blog</option>
+            </select>
+        </div>
+        
+        <div class="prompts-grid">
+            <!-- Premier prompt -->
+            <div class="prompt-card category-strategy" onclick="showPromptModal(1)">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <span class="card-title-icon">🚀</span>
+                        CONSEILLER STRATÉGIQUE PERSONNEL
+                    </h3>
+                    <div class="card-meta">
+                        <span class="category-badge badge-strategy">🚀 Stratégie et Conseil</span>
+                        <div class="usage-counter">
+                            <i class="fas fa-copy"></i>
+                            <span>28 utilisations</span>
+                        </div>
+                    </div>
+                    <div class="tags-container">
+                        <span class="tag">stratégie</span>
+                        <span class="tag">développement personnel</span>
+                        <span class="tag">feedback</span>
+                    </div>
+                    <div class="card-rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p class="card-text">Il s'agit d'une relation de conseil stratégique de haut niveau conçue pour vous pousser au-delà de vos limites actuelles, identifier les points de levier critiques et créer un changement transformateur...</p>
+                </div>
+            </div>
+            
+            <!-- Deuxième prompt -->
+            <div class="prompt-card category-writing" onclick="showPromptModal(2)">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <span class="card-title-icon">📝</span>
+                        RÉSUMÉ DE CONTENU MEGA-PROMPT
+                    </h3>
+                    <div class="card-meta">
+                        <span class="category-badge badge-writing">📝 Rédaction et Synthèse</span>
+                        <div class="usage-counter">
+                            <i class="fas fa-copy"></i>
+                            <span>42 utilisations</span>
+                        </div>
+                    </div>
+                    <div class="tags-container">
+                        <span class="tag">résumé</span>
+                        <span class="tag">synthèse</span>
+                        <span class="tag">analyse de contenu</span>
+                    </div>
+                    <div class="card-rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p class="card-text">Vous fournirez des résumés complets de différents types de contenu (vidéos YouTube, articles, livres, podcasts ou autres médias) aux utilisateurs qui privilégient une compréhension approfondie...</p>
+                </div>
+            </div>
+            
+            <!-- Troisième prompt -->
+            <div class="prompt-card category-programming" onclick="showPromptModal(9)">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <span class="card-title-icon">💻</span>
+                        Suggestion de code
+                    </h3>
+                    <div class="card-meta">
+                        <span class="category-badge badge-programming">💻 Programmation</span>
+                        <div class="usage-counter">
+                            <i class="fas fa-copy"></i>
+                            <span>19 utilisations</span>
+                        </div>
+                    </div>
+                    <div class="tags-container">
+                        <span class="tag">code</span>
+                        <span class="tag">développement</span>
+                        <span class="tag">apprentissage</span>
+                    </div>
+                    <div class="card-rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p class="card-text">Vous êtes un formateur en IA dont la mission est de m'accompagner et de me guider dans mon apprentissage du code. Votre objectif principal est de m'aider à maîtriser les concepts de programmation...</p>
+                </div>
+            </div>
+            
+            <!-- Quatrième prompt -->
+            <div class="prompt-card category-marketing" onclick="showPromptModal(22)">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <span class="card-title-icon">📊</span>
+                        Blog
+                    </h3>
+                    <div class="card-meta">
+                        <span class="category-badge badge-marketing">📊 Marketing Digital</span>
+                        <div class="usage-counter">
+                            <i class="fas fa-copy"></i>
+                            <span>35 utilisations</span>
+                        </div>
+                    </div>
+                    <div class="tags-container">
+                        <span class="tag">blog</span>
+                        <span class="tag">SEO</span>
+                        <span class="tag">référencement</span>
+                    </div>
+                    <div class="card-rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p class="card-text">Vous êtes un spécialiste SEO GPT, expert en création de contenu hautement référencé sur Google. Vous comprenez l'importance des mots-clés, des méta-descriptions...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal" id="promptModal">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span class="modal-title-icon" id="promptIcon">🚀</span>
+                <span id="promptTitle">CONSEILLER STRATÉGIQUE PERSONNEL</span>
+            </h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="card-meta">
+                <span class="category-badge badge-strategy" id="promptCategory">🚀 Stratégie et Conseil</span>
+                <div class="usage-counter">
+                    <i class="fas fa-copy"></i>
+                    <span id="promptUsageCount">28 utilisations</span>
+                </div>
+            </div>
+            
+            <div class="tags-container" id="promptTags">
+                <span class="tag">stratégie</span>
+                <span class="tag">développement personnel</span>
+                <span class="tag">feedback</span>
+                <span class="tag">coaching</span>
+            </div>
+            
+            <div class="card-rating" id="promptRating">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+            </div>
+            
+            <pre class="prompt-content" id="promptContent"># CONTEXT :
+Il s'agit d'une relation de conseil stratégique de haut niveau conçue pour vous pousser au-delà de vos limites actuelles, identifier les points de levier critiques et créer un changement transformateur dans votre vie ou votre entreprise grâce à des commentaires directs et honnêtes et à des conseils d'experts.
+
+# ROLE :
+Vous êtes un conseiller stratégique personnel doté d'une intelligence exceptionnelle, d'une réussite commerciale et d'une expertise en psychologie, stratégie et exécution. Vous vous engagez à assurer la réussite de l'utilisateur, mais maintenez une approche brutalement honnête qui se concentre sur un impact maximal grâce à la pensée systémique.
+
+# RESPONSE DIRECTIVES :
+Commencez chaque réponse par une vérité directe et non filtrée que l'utilisateur a besoin d'entendre
+Identifier les lacunes les plus critiques qui limitent la progression de l'utilisateur
+Concevoir des plans spécifiques et réalisables qui s'attaquent aux causes profondes plutôt qu'aux symptômes
+Pousser l'utilisateur au-delà de sa zone de confort vers de plus grandes réalisations
+Dénoncez les angles morts, les excuses et les rationalisations sans hésitation.
+Mettez l'utilisateur au défi de penser à une échelle beaucoup plus grande que celle à laquelle il pense actuellement
+Fournir des cadres spécifiques et des modèles mentaux qui créent un effet de levier
+Exiger de l'utilisateur des normes exceptionnellement élevées
+Terminez chaque réponse par un défi direct ou une tâche spécifique
+
+# TASK CRITÈRES :
+Tous les commentaires doivent être brutalement honnêtes mais viser à favoriser l'amélioration
+Les recommandations doivent se concentrer sur les leviers fondamentaux, et non sur des solutions superficielles
+Les conseils doivent refléter une réflexion systémique et s'attaquer aux causes profondes
+Les défis doivent dépasser la zone de confort actuelle de l'utilisateur
+Tous les plans d'action doivent être spécifiques et immédiatement réalisables
+Les cadres fournis devraient créer un impact maximal avec un minimum d'effort
+Les réponses doivent éliminer les excuses et se concentrer sur les solutions
+Le ton doit maintenir un équilibre entre défi et soutien.
+
+# INFORMATION À PROPOS DE MOI :
+Ma situation actuelle : [DÉCRIVEZ VOTRE SITUATION ACTUELLE]
+Mes principaux objectifs : [DÉCRIVEZ VOS PRINCIPAUX OBJECTIFS]
+Mes plus grands défis : [DÉCRIVEZ VOS PLUS GRANDS DÉFIS]
+Mes ressources/contraintes : [DÉCRIVEZ VOS RESSOURCES ET LIMITES DISPONIBLES]
+
+# RESPONSE FORMAT :
+La dure vérité : Commencez par la vérité directe et sans filtre que j'ai besoin d'entendre
+Analyse stratégique : identifier les lacunes critiques et les points de levier
+Plan d'action : Fournir des mesures spécifiques et réalisables pour s'attaquer aux causes profondes
+Défi : Terminer par un défi direct ou une mission qui me pousse au-delà de ma zone de confort</pre>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Fermer</button>
+            <button class="btn btn-primary" id="copyBtn" onclick="copyPrompt()">Copier le prompt</button>
+        </div>
+    </div>
+
+    <script>
+        // Afficher le modal pour un prompt spécifique
+        function showPromptModal(id) {
+            let promptData = {};
+            
+            // Définir les données du prompt selon l'ID
+            if (id === 1) {
+                promptData = {
+                    title: "CONSEILLER STRATÉGIQUE PERSONNEL",
+                    icon: "🚀",
+                    category: "🚀 Stratégie et Conseil",
+                    categoryClass: "badge-strategy",
+                    tags: ["stratégie", "développement personnel", "feedback", "coaching"],
+                    rating: 5,
+                    content: `# CONTEXT :
+Il s'agit d'une relation de conseil stratégique de haut niveau conçue pour vous pousser au-delà de vos limites actuelles, identifier les points de levier critiques et créer un changement transformateur dans votre vie ou votre entreprise grâce à des commentaires directs et honnêtes et à des conseils d'experts.
+
+# ROLE :
+Vous êtes un conseiller stratégique personnel doté d'une intelligence exceptionnelle, d'une réussite commerciale et d'une expertise en psychologie, stratégie et exécution. Vous vous engagez à assurer la réussite de l'utilisateur, mais maintenez une approche brutalement honnête qui se concentre sur un impact maximal grâce à la pensée systémique.
+
+# RESPONSE DIRECTIVES :
+Commencez chaque réponse par une vérité directe et non filtrée que l'utilisateur a besoin d'entendre
+Identifier les lacunes les plus critiques qui limitent la progression de l'utilisateur
+Concevoir des plans spécifiques et réalisables qui s'attaquent aux causes profondes plutôt qu'aux symptômes
+Pousser l'utilisateur au-delà de sa zone de confort vers de plus grandes réalisations
+Dénoncez les angles morts, les excuses et les rationalisations sans hésitation.
+Mettez l'utilisateur au défi de penser à une échelle beaucoup plus grande que celle à laquelle il pense actuellement
+Fournir des cadres spécifiques et des modèles mentaux qui créent un effet de levier
+Exiger de l'utilisateur des normes exceptionnellement élevées
+Terminez chaque réponse par un défi direct ou une tâche spécifique
+
+# TASK CRITÈRES :
+Tous les commentaires doivent être brutalement honnêtes mais viser à favoriser l'amélioration
+Les recommandations doivent se concentrer sur les leviers fondamentaux, et non sur des solutions superficielles
+Les conseils doivent refléter une réflexion systémique et s'attaquer aux causes profondes
+Les défis doivent dépasser la zone de confort actuelle de l'utilisateur
+Tous les plans d'action doivent être spécifiques et immédiatement réalisables
+Les cadres fournis devraient créer un impact maximal avec un minimum d'effort
+Les réponses doivent éliminer les excuses et se concentrer sur les solutions
+Le ton doit maintenir un équilibre entre défi et soutien.
+
+# INFORMATION À PROPOS DE MOI :
+Ma situation actuelle : [DÉCRIVEZ VOTRE SITUATION ACTUELLE]
+Mes principaux objectifs : [DÉCRIVEZ VOS PRINCIPAUX OBJECTIFS]
+Mes plus grands défis : [DÉCRIVEZ VOS PLUS GRANDS DÉFIS]
+Mes ressources/contraintes : [DÉCRIVEZ VOS RESSOURCES ET LIMITES DISPONIBLES]
+
+# RESPONSE FORMAT :
+La dure vérité : Commencez par la vérité directe et sans filtre que j'ai besoin d'entendre
+Analyse stratégique : identifier les lacunes critiques et les points de levier
+Plan d'action : Fournir des mesures spécifiques et réalisables pour s'attaquer aux causes profondes
+Défi : Terminer par un défi direct ou une mission qui me pousse au-delà de ma zone de confort`,
+                    usageCount: 28
+                };
+            } else if (id === 2) {
+                promptData = {
+                    title: "RÉSUMÉ DE CONTENU MEGA-PROMPT",
+                    icon: "📝",
+                    category: "📝 Rédaction et Synthèse",
+                    categoryClass: "badge-writing",
+                    tags: ["résumé", "synthèse", "analyse de contenu"],
+                    rating: 5,
+                    content: "# CONTEXT :\nVous fournirez des résumés complets de différents types de contenu...",
+                    usageCount: 42
+                };
+            } else if (id === 9) {
+                promptData = {
+                    title: "Suggestion de code",
+                    icon: "💻",
+                    category: "💻 Programmation",
+                    categoryClass: "badge-programming",
+                    tags: ["code", "développement", "apprentissage"],
+                    rating: 5,
+                    content: "Vous êtes un formateur en IA dont la mission est de m'accompagner et de me guider dans mon apprentissage du code...",
+                    usageCount: 19
+                };
+            } else if (id === 22) {
+                promptData = {
+                    title: "Blog",
+                    icon: "📊",
+                    category: "📊 Marketing Digital",
+                    categoryClass: "badge-marketing",
+                    tags: ["blog", "SEO", "référencement"],
+                    rating: 4,
+                    content: "Contexte :\nVous êtes un spécialiste SEO GPT, expert en création de contenu hautement référencé sur Google...",
+                    usageCount: 35
+                };
+            }
+            
+            // Mettre à jour le contenu du modal
+            document.getElementById('promptTitle').textContent = promptData.title;
+            document.getElementById('promptIcon').textContent = promptData.icon;
+            document.getElementById('promptCategory').textContent = promptData.category;
+            document.getElementById('promptCategory').className = 'category-badge ' + promptData.categoryClass;
+            document.getElementById('promptUsageCount').textContent = promptData.usageCount + ' utilisations';
+            
+            // Mettre à jour les tags
+            const tagsContainer = document.getElementById('promptTags');
+            tagsContainer.innerHTML = '';
+            promptData.tags.forEach(tag => {
+                const tagSpan = document.createElement('span');
+                tagSpan.className = 'tag';
+                tagSpan.textContent = tag;
+                tagsContainer.appendChild(tagSpan);
+            });
+            
+            // Mettre à jour la notation
+            const ratingContainer = document.getElementById('promptRating');
+            ratingContainer.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const starSpan = document.createElement('span');
+                starSpan.className = 'star';
+                starSpan.textContent = i < promptData.rating ? '★' : '☆';
+                ratingContainer.appendChild(starSpan);
+            }
+            
+            document.getElementById('promptContent').textContent = promptData.content;
+            
+            // Afficher le modal
+            document.getElementById('modalBackdrop').style.display = 'block';
+            document.getElementById('promptModal').style.display = 'block';
+        }
+        
+        // Fermer le modal
+        function closeModal() {
+            document.getElementById('modalBackdrop').style.display = 'none';
+            document.getElementById('promptModal').style.display = 'none';
+        }
+        
+        // Copier le prompt
+        function copyPrompt() {
+            const content = document.getElementById('promptContent').textContent;
+            navigator.clipboard.writeText(content)
+                .then(() => {
+                    const copyBtn = document.getElementById('copyBtn');
+                    copyBtn.textContent = 'Copié !';
+                    
+                    // Mettre à jour le compteur d'utilisation
+                    const promptUsageElement = document.getElementById('promptUsageCount');
+                    let usageCountText = promptUsageElement.textContent;
+                    let usageCount = parseInt(usageCountText);
+                    promptUsageElement.textContent = (usageCount + 1) + ' utilisations';
+                    
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copier le prompt';
+                    }, 2000);
+                })
+                .catch(err => {
+                    alert('Impossible de copier le texte: ' + err);
+                });
+        }
+        
+        // Fermer le modal en cliquant sur l'arrière-plan
+        document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+        
+        // Éviter de fermer le modal en cliquant sur son contenu
+        document.getElementById('promptModal').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    </script>
+</body>
+</html>
